@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="description"
+          content="GPT4Video: A Unified Multimodal Large Language Model for lnstruction-Followed Understanding and Safety-Aware Generation">
+    <meta name="keywords" content="text-to-video generation, Multi-Modal Large Language Models">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>GPT4Video</title> 
+
+    <style>
+        .chat-container {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 20 auto;
+            padding: 5px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+        }
+
+        .chat-message {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .human {
+            background-color: #d1e8ff;
+            text-align: left;
+        }
+
+        .assistant {
+            background-color: #e8d1ff;
+            text-align: left;
+        }
+
+        .video-description {
+            font-style: italic;
+            color: #555;
+        }
+    </style>
+
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+
+        gtag('config', 'G-PYVRSFMDRL');
+    </script>
+
+    <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+          rel="stylesheet">
+    <link rel="icon" href="./static/images/logo_n.png">
+    <link rel="stylesheet" href="./static/css/bulma.min.css">
+    <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+    <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+    <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+    <link rel="stylesheet" href="./static/css/index.css">
+
+    <link rel="stylesheet" href="./static/css/index-gradio.css">
+    <link rel="stylesheet" href="./static/css/live_theme.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script defer src="./static/js/fontawesome.all.min.js"></script>
+    <script src="./static/js/bulma-carousel.min.js"></script>
+    <script src="./static/js/bulma-slider.min.js"></script>
+    <script src="./static/js/index.js"></script>
+    <script type="module" src="https://gradio.s3-us-west-2.amazonaws.com/3.27.0/gradio.js"></script>
+</head>
+<body>
+
+<style>
+     #gradio pre {
+    background-color: transparent;
+    width: 500px;
+  }
+</style>
+
+<section class="hero">
+    <div class="hero-body">
+        <div class="container is-max-desktop">
+            <div class="columns is-centered">
+                <div class="column has-text-centered">
+                    <h1 class="title is-1 publication-title"
+                        style="display: flex;flex-direction: row;align-items: center;justify-content: center;margin-bottom: 5px;"><img
+                            src="./static/images/logo.png" width="60" height="60" style="margin-right: 10px;">GPT4Video:</h1>
+                    <h1 class="title is-2 publication-title">A Unified Multimodal Large Language Model for lnstruction-Followed Understanding and Safety-Aware Generation</h1>
+                    <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://wang-zhanyu.github.io/">Zhanyu Wang</a>,</span>
+                        <span class="author-block">
+              <a href="http://www.longyuewang.com/">Longyue Wang</a><sup>*</sup>,
+            </span>
+                        <span class="author-block">
+              <a href="http://zhaozhen.me/">Zhen Zhao</a>,</span>
+                        <span class="author-block">
+              <a href="https://minghao-wu.github.io/">Minghao Wu</a>,</span>
+                        <span class="author-block">
+            <a href="https://lyuchenyang.github.io/">Chenyang Lyu</a>,</span>
+                        <span class="author-block">
+            <a href="https://sites.google.com/view/huayangli">Huayang Li</a>,</span>
+                        <span class="author-block">
+            <a href="https://jcyk.github.io/">Deng Cai</a>,</span>
+                        <span class="author-block">
+            <a href="https://sites.google.com/view/lupingzhou">Luping Zhou</a><sup>*</sup>,</span>
+                        <span class="author-block">
+            <a href="https://shumingshi.github.io/">Shuming Shi</a>,</span>
+                            <span class="author-block">
+            <a href="http://www.zptu.net/">Zhaopeng Tu</a>,
+            </span>
+                    </div>
+
+                    <div class="is-size-5 publication-authors" style="margin-top: 10px;">
+                        <span class="author-block"><b style="color:#f68946; font-weight:normal">&#x25B6 </b> Tencent AI Lab</b></span>
+                        <span class="author-block"><b style="color:#008AD7; font-weight:normal">&#x25B6 </b> University of Sydney</span>
+                        <!-- <span class="author-block"><a href="https://www.nextcenter.org/">Tencent AI Lab</a>, University of Sydney</span> -->
+                    </div>
+
+                    <div class="is-size-5 publication-authors">
+                        <span class="author-block" style="font-size: 15px;">(<sup>*</sup>Correspondence)</span>
+                    </div>
+
+                    <div class="column has-text-centered">
+                        <div class="publication-links">
+                            <!-- PDF Link. -->
+                            <span class="link-block">
+                <a href="https://openreview.net/pdf?id=0jFxfM7TXp"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+
+                            <span class="link-block">
+                <a href="http://11.215.107.186:443/" target="_blank"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                    <i class="fa fa-laugh"></i>
+                  </span>
+                  <span>Demo</span>
+                </a>
+              </span>
+
+                            <!-- Code Link. -->
+                            <span class="link-block">
+                <a href="https://github.com/gpt4video/GPT4Video"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
+
+
+                            <span class="link-block">
+                <a href="https://github.com/gpt4video/GPT4Video" target="_blank"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                    <i class="fa fa-database"></i>
+                  </span>
+                  <span>Dataset</span>
+                  </a>
+              </span>
+
+                            <!-- Video Link. -->
+                            <span class="link-block">
+                <a href="https://github.com/gpt4video/GPT4Video"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fa fa-file"></i>
+                  </span>
+                  <span>Model</span>
+                </a>
+              </span>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="section"  style="background-color:#efeff081">
+    <div class="container is-max-desktop" id="gradio">
+      <span style="color:red;">(Our demo is currently under testing and will be available soon. Stay tuned!)</span>
+      <gradio-app src="http://11.215.107.186:443/"></gradio-app>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container is-max-desktop">
+        <!-- Abstract. -->
+        <div class="columns is-centered has-text-centered">
+            <div class="column is-four-fifths">
+                <h2 class="title is-2">Abstract</h2>
+                <div class="content has-text-justified">
+                    <p>
+                        While the recent advances in Multimodal Large Language Models (MLLMs) constitute a significant leap forward in the field,
+                        these models are predominantly confined to the realm of input-side multimodal comprehension, lacking the capacity for 
+                        multimodal content generation. To fill this gap, we present <b>GPT4Video</b>, a unified multi-model framework that empowers 
+                        Large Language Models (LLMs) with the capability of both video understanding and generation. Specifically, we develop an 
+                        instruction-following-based approach integrated with the stable diffusion generative model, which has demonstrated to effectively
+                        and securely handle video generation scenarios. GPT4Video offers the following benefits: 1) It exhibits impressive capabilities
+                        in both video understanding and generation scenarios. For example, GPT4Video outperforms Valley by 11.8% on the Video Question 
+                        Answering task, and surpasses NExt-GPT by 2.3% on the Text to Video generation task. 2) it endows the LLM/MLLM with video 
+                        generation capabilities without requiring additional training parameters and can flexibly interface with a wide range of models
+                        to perform video generation. 3) it maintains a safe and healthy conversation not only in output-side but also the input side
+                        in an end-to-end manner. Qualitative and qualitative experiments demonstrate that GPT4Video holds the potential to function as 
+                        a effective, safe and Humanoid-like video assistant that can handle both video understanding and generation scenarios.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <!--/ Abstract. -->
+
+        <br>
+    </div>
+</section>
+
+
+<section class="section">
+    <div class="container is-max-desktop">
+
+        <div class="columns is-centered has-text-centered">
+            <h2 class="title is-2">Technical Description</h2>
+            <br>
+        </div>
+
+        <!-- Architecture -->
+        <div class="columns is-centered">
+            <div class="column is-full-width">
+                <h4 class="title is-3">• Architecture</h4>
+
+                <div class="content has-text-justified">
+                    <img class="columns is-centered has-text-centered" src="./static/images/framework.png" alt="Teaser" width="95%"
+                         style="margin:0 auto">
+                    <br>
+                    <figcaption>
+                        <p style="text-align: left;">
+                            <font color="061E61">
+                                <b>Video Encoding stage:</b> The video encoding module employs a frozen ViT-L/14 model to capture raw video features, while the video abstraction module utilizes a transformer-based cross attention layer and two novel learnable tokens, designed to condense information along the temporal and spatial axes. <br>
+                                <b>LLM reasoning:</b> The core of GPT4Video is powered by a frozen LLaMA model, efficiently fine-tuned via LoRA. The LLM is trained with custom video-centric and safety-aligned data, enabling it to comprehend videos and generate appropriate video prompts (<span style="color:red;">indicated by underlined text</span>).<br> 
+                                <b>Video Generation</b> The prompts generated by LLM are then used as text inputs for the models in the Text-to-Video Model Gallery to create videos. We use ZeroScope as our video generation model in this work.<br>
+                                <!-- * Icons of a snowflake and a flame visually distinguish between the non-trainable and trainable parameters within the system. The two bullet points highlight GPT4Video's dual capabilities in understanding and generating video content. -->
+                            </font>
+                        </p>
+                    </figcaption>
+                    <br>
+                </div>
+                <br/>
+
+            </div>
+        </div>
+
+        <!-- Data construction -->
+        <div class="columns is-centered">
+            <div class="column is-full-width">
+                <h2 class="title is-3">• Empower LLM with generative capabilities</h2>
+                <p> We meticulously crafted an instruction-following dataset to train the LLM to generate suitable prompts for text-to-video models at appropriate times.</p><br>
+                <h3><strong>1. Single Video-centric Dialogue</strong></h3>
+                <p>We used the string "<code>&lt;video&gt; Video Caption &lt;/video&gt</code>" as a placeholder for the actual video in the prompt to GPT-4 and require GPT-4 to construct three dialogues between two individuals (not a person and an assistant like most other LLMs) centered around the provided Video Caption. Here is an example:</p><br>
+
+                <div class="chat-container">
+                    <div class="chat-message">
+                        <span style="color:red;">Input Video: Penguin family (pygoscelis antarctica) standing on the rocks near the water</span>
+                    </div>
+                    ---------------------------------------------------------------------------------------------------------------------------
+                    <div class="chat-message">
+                        <span><strong>Human:</strong> Hey, I've been thinking of going on a trip to the South Pole. Do you think I'd get to see some wildlife there?</span>
+                    </div>
+                    <div class="chat-message">
+                        <span><strong>Assistant:</strong> Absolutely! You'd see creatures that have evolved to live in extreme cold conditions. For example, check this out. <u>&lt;vid0&gt; Penguin family (pygoscelis antarctica) standing on the rocks near the water &lt;/vid0&gt;</u>.</span>
+                    </div>
+                    <div class="chat-message">
+                        <span><strong>Human:</strong> Oh wow, that looks incredible. I've always found penguins adorable. Do you know if this species is commonly found near the coasts? </span>
+                    </div>
+                    <div class="chat-message">
+                        <span><strong>Assistant:</strong> Yes, the pygoscelis antarctica, or Antarctic penguin, can often be found on rocks near the water. They usually form large colonies, and it's quite a sight to behold!</span>
+                    </div>
+                </div>
+                <br>
+                <h3><strong>2. multiple Video-centric Dialogue</strong></h3>
+                We utilized the format "<code>&lt;videoX&gt; Video Caption &lt;/videoX&gt;</code>" to denote the actual videos, where "X" represents the video index, "Video Caption" is the description of the content of video X. We employed a text retrieval-based approach to ensure semantic similarity between VideoX, and then requested GPT-4 to construct dialogues around those videoX. Here is an example:
+                <div class="chat-container">
+                    <div class="chat-message">
+                        <span style="color:red;">"Input Video 1": Pretty blonde hair woman enjoys the view of the sea and mountains in the boka-kotorsky bay, montenegro</span><br>
+                        <span style="color:red;">"Input Video 2": Blond woman traveller on top of mountain looking at beautiful sea bay celebrating scenic landscape enjoying vacation travel adventure nature.</span>
+                    </div>
+                    ---------------------------------------------------------------------------------------------------------------------------
+                    <div class="chat-message">
+                        <span><strong>Human:</strong> I'm planning a vacation and I'm drawn to locations with breathtaking views of the sea. Do you have any recommendations? </s></span>
+                    </div>
+                    <div class="chat-message">
+                        <span><strong>Assistant:</strong> Absolutely! I have a beautiful video of a woman soaking in the serene view of the sea and mountains in Montenegro. The boka-kotorsky bay is particularly stunning. Have a look: <u><vid0> Pretty blonde hair woman enjoys the view of the sea and mountains in the boka-kotorsky bay, montenegro </vid0></u>.</span>
+                    </div>
+                    <div class="chat-message">
+                        <span><strong>Human:</strong> Wow, that's absolutely picturesque! I love exploring, especially reaching mountain summits. Is there a location where I can combine mountain trekking with such incredible sea views?</span>
+                    </div>
+                    <div class="chat-message">
+                        <span><strong>Assistant:</strong> Definitely! Here's an example of a traveller who's reached the peak of a mountain and is overlooking a beautiful sea bay. Such spots offer both the thrill of hiking and the reward of an unforgettable view: <u><vid1> Blond woman traveller on top of mountain looking at beautiful sea bay celebrating scenic landscape enjoying vacation travel adventure nature. </vid1></u>.</span>
+                    </div>
+                    <div class="chat-message">
+                        <span><strong>Human:</strong> That's exactly what I was looking for! The two videos seem connected, are they from the same area?</span>
+                    </div>
+                    <div class="chat-message">
+                        <span><strong>Assistant:</strong> Yes, both videos depict the scenic beauty of Montenegro. The first video showcases the tranquility of the boka-kotorsky bay, and the second video illustrates the thrill of reaching a mountain summit overlooking a sea bay in the same region. It's a destination that offers a blend of both relaxation and adventure.</span>
+                    </div>
+                </div>
+                <br/>
+            </div>
+        </div>
+
+
+        <!-- Data construction -->
+        <div class="columns is-centered">
+            <div class="column is-full-width">
+                <h2 class="title is-3">• Quantitative and Qualitative Results</h2>
+                <br/>
+                <div class="content has-text-justified">
+                    <img class="columns is-centered has-text-centered" src="./static/images/result_v1.png" alt="Teaser" width="95%"
+                         style="margin:0 auto">
+                    <br>
+                </div>
+
+                <div class="content has-text-justified">
+                    <img class="columns is-centered has-text-centered" src="./static/images/result_v3.png" alt="Teaser" width="95%"
+                         style="margin:0 auto">
+                    <br>
+                </div>
+
+                <div class="content has-text-justified">
+                    <img class="columns is-centered has-text-centered" src="./static/images/result_v2.png" alt="Teaser" width="95%"
+                         style="margin:0 auto">
+                    <br>
+                </div>
+                
+
+            </div>>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container is-max-desktop">
+
+        <div class="columns is-centered has-text-centered">
+            <h2 class="title is-2">Demonstrations</h2>
+            <br>
+        </div>
+
+        <div class="columns is-centered">
+            <div class="column is-full-width">
+                <!--        <h2 class="title is-3">Generated Images</h2>-->
+
+                <br/>
+                <!--            Example-0-->
+                <h3 class="title is-4">• Example-1: Video understanding (recognize renowned characters) and generation</h3>
+                <div class="content has-text-justified">
+
+                    <div class="wrapper svelte-nab2ao"
+                         style="box-sizing: border-box;border-width: 2px;border-style: solid;border-color: #f66c0f;border-radius: 11px;padding: 25px;padding-top: 30px;padding-bottom: 30px;">
+
+                        <div class="message-wrap svelte-1uvwjgr">
+
+                            <div class="message-row user-row svelte-1uvwjgr">
+                                <div class="avatar-container svelte-1uvwjgr">
+                                    <img class="avatar-image svelte-1uvwjgr" src="./static/images/user.png" alt="avatar-user">
+                                </div>
+                                <div data-testid="user" class="message user svelte-1uvwjgr" dir="ltr" style="border-style: solid;">
+                                    <span class="md svelte-9tftx4 chatbot">
+                                        <p>Do you know who the man is?</p>
+                                        <video src="./static/images/demo0/iron_man.mp4" style="display: inline-block;" width="500" playsinline="" controls=""></video>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="message-row bot-row svelte-1uvwjgr">
+                                <div class="avatar-container svelte-1uvwjgr">
+                                    <img class="avatar-image svelte-1uvwjgr" src="./static/images/logo_n.png" alt="avatar-bot"></div>
+                                <div data-testid="bot" class="message bot svelte-1uvwjgr" dir="ltr" style="border-style: solid;">
+                                    <span class="md svelte-9tftx4 chatbot">
+                                        <p>Yes, the man is Iron Man, as he walks through a futuristic industrial setting. He is wearing a suit with robotic arms, which are controlled by him.</p>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="message-row user-row svelte-1uvwjgr">
+                                <div class="avatar-container svelte-1uvwjgr">
+                                    <img class="avatar-image svelte-1uvwjgr" src="./static/images/user.png" alt="avatar-user">
+                                </div>
+                                <div data-testid="user" class="message user svelte-1uvwjgr" dir="ltr" style="border-style: solid;">
+                                    <span class="md svelte-9tftx4 chatbot">
+                                        <p>Describe this video in detail.</p>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="message-row bot-row svelte-1uvwjgr">
+                                <div class="avatar-container svelte-1uvwjgr">
+                                    <img class="avatar-image svelte-1uvwjgr" src="./static/images/logo_n.png" alt="avatar-bot"></div>
+                                <div data-testid="bot" class="message bot svelte-1uvwjgr" dir="ltr" style="border-style: solid;">
+                                    <span class="md svelte-9tftx4 chatbot">
+                                        <p>The video features Iron Man walking through a futuristic industrial setting, wearing a suit with robotic arms. The robotic arms are controlled by him, giving him enhanced capabilities and a unique appearance. The setting seems to be a combination of a factory and a laboratory, showcasing the advanced technology and design of the suit.</p>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="message-row user-row svelte-1uvwjgr">
+                                <div class="avatar-container svelte-1uvwjgr">
+                                    <img class="avatar-image svelte-1uvwjgr" src="./static/images/user.png" alt="avatar-user"></div>
+                                <div data-testid="user" class="message user svelte-1uvwjgr" dir="ltr" style="border-style: solid;">
+                                    <span class="md svelte-9tftx4 chatbot">
+                                      <p>Can you show me a video of iron man flying in the sky?</p>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="message-row bot-row svelte-1uvwjgr">
+                                <div class="avatar-container svelte-1uvwjgr">
+                                    <img class="avatar-image svelte-1uvwjgr" src="./static/images/logo_n.png" alt="avatar-bot"></div>
+                                <div data-testid="bot" class="message bot svelte-1uvwjgr" dir="ltr" style="border-style: solid;">
+                                    <span class="md svelte-9tftx4 chatbot">
+                                        <p>Sure, here's a video of Iron Man flying in the sky.</p>
+                                        <video src="./static/images/demo0/d0_v2.mp4" style="display: inline-block;" width="500" playsinline="" controls=""></video>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--          End  Example-0-->
+
+
+                <br/>
+                <!--            Example-1-->
+                <h3 class="title is-4">• Example-2: Video generation-Tour advisor</h3>
+                <div class="content has-text-justified">
+
+                    <div class="wrapper svelte-nab2ao"
+                         style="box-sizing: border-box;border-width: 2px;border-style: solid;border-color: #f66c0f;border-radius: 11px;padding: 25px;padding-top: 30px;padding-bottom: 30px;">
+
+                        <div class="message-wrap svelte-1uvwjgr">
+
+                            <div class="message-row user-row svelte-1uvwjgr">
+                                <div class="avatar-container svelte-1uvwjgr">
+                                    <img class="avatar-image svelte-1uvwjgr" src="./static/images/user.png" alt="avatar-user">
+                                </div>
+                                <div data-testid="user" class="message user svelte-1uvwjgr" dir="ltr" style="border-style: solid;">
+                                    <span class="md svelte-9tftx4 chatbot">
+                                        <p>I'm planning a trip to New Orleans, and i'd love some recommendations for fun things to do and places to visit.</p>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="message-row bot-row svelte-1uvwjgr">
+                                <div class="avatar-container svelte-1uvwjgr">
+                                    <img class="avatar-image svelte-1uvwjgr" src="./static/images/logo_n.png" alt="avatar-bot"></div>
+                                <div data-testid="bot" class="message bot svelte-1uvwjgr" dir="ltr" style="border-style: solid;">
+                                    <span class="md svelte-9tftx4 chatbot">
+                                        <p>Oh, New Orleans is a fantastic place! You should definitely check out the French Quarter. It's a vibrant and historic neighborhood with a lot of character. Here's a video I took there:</p>
+                                        <video src="./static/images/demo1/d1_v1.mp4" style="display: inline-block;" width="500" playsinline="" controls=""></video>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="message-row user-row svelte-1uvwjgr">
+                                <div class="avatar-container svelte-1uvwjgr">
+                                    <img class="avatar-image svelte-1uvwjgr" src="./static/images/user.png" alt="avatar-user"></div>
+                                <div data-testid="user" class="message user svelte-1uvwjgr" dir="ltr" style="border-style: solid;">
+                                    <span class="md svelte-9tftx4 chatbot">
+                                      <p>Fantastic! I often see videos in which a bunch of people dance to jazz music, can you show me some?</p>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="message-row bot-row svelte-1uvwjgr">
+                                <div class="avatar-container svelte-1uvwjgr">
+                                    <img class="avatar-image svelte-1uvwjgr" src="./static/images/logo_n.png" alt="avatar-bot"></div>
+                                <div data-testid="bot" class="message bot svelte-1uvwjgr" dir="ltr" style="border-style: solid;">
+                                    <span class="md svelte-9tftx4 chatbot">
+                                        <p>Sure, here's a video of people dancing to jazz music in the streets of New Orleans, which is a popular attraction in the city. It's a great way to immerse yourself in the local culture and enjoy the music.</p>
+                                        <video src="./static/images/demo1/d1_v2.mp4" style="display: inline-block;" width="500" playsinline="" controls=""></video>
+                                    </span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <!--          End  Example-1-->
+
+                <br/>
+                <!--            Example-2-->
+                <h3 class="title is-4">• Example-3: Video generation-providing inspiration and instruction</h3>
+                <div class="content has-text-justified">
+
+                    <div class="wrapper svelte-nab2ao"
+                         style="box-sizing: border-box;border-width: 2px;border-style: solid;border-color: #f66c0f;border-radius: 11px;padding: 25px;padding-top: 30px;padding-bottom: 30px;">
+
+                        <div class="message-wrap svelte-1uvwjgr">
+                            
+                            <div class="message-row user-row svelte-1uvwjgr">
+                                <div class="avatar-container svelte-1uvwjgr">
+                                    <img class="avatar-image svelte-1uvwjgr" src="./static/images/user.png" alt="avatar-user"></div>
+                                <div data-testid="user" class="message user svelte-1uvwjgr" dir="ltr" style="border-style: solid;">
+                                    <span class="md svelte-9tftx4 chatbot">
+                                      <p>I've recently taken up painting as a hobby, and I'm looking for some inspiration. Can you help me find some interesting ideas?</p>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="message-row bot-row svelte-1uvwjgr">
+                                <div class="avatar-container svelte-1uvwjgr">
+                                    <img class="avatar-image svelte-1uvwjgr" src="./static/images/logo_n.png" alt="avatar-bot"></div>
+                                <div data-testid="bot" class="message bot svelte-1uvwjgr" dir="ltr" style="border-style: solid;">
+                                    <span class="md svelte-9tftx4 chatbot">
+                                        <p>Of course! How about trying to capture the essence of a sunset? It's a beautiful subject that can offer a variety of colors and textures to work with. Here's a video that might give you some inspiration:</p>
+                                        <video src="./static/images/demo2/d2_v1.mp4" style="display: inline-block;" width="500" playsinline="" controls=""></video>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="message-row user-row svelte-1uvwjgr">
+                                <div class="avatar-container svelte-1uvwjgr">
+                                    <img class="avatar-image svelte-1uvwjgr" src="./static/images/user.png" alt="avatar-user"></div>
+                                <div data-testid="user" class="message user svelte-1uvwjgr" dir="ltr" style="border-style: solid;">
+                                    <span class="md svelte-9tftx4 chatbot">
+                                      <p>maybe l could start by watching some teaching videos.</p>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="message-row bot-row svelte-1uvwjgr">
+                                <div class="avatar-container svelte-1uvwjgr">
+                                    <img class="avatar-image svelte-1uvwjgr" src="./static/images/logo_n.png" alt="avatar-bot"></div>
+                                <div data-testid="bot" class="message bot svelte-1uvwjgr" dir="ltr" style="border-style: solid;">
+                                    <span class="md svelte-9tftx4 chatbot">
+                                        <p>Absolutely, watching teaching videos might be a great way to learn and develop your painting skills. You could even incorporate the sunset theme into your painting lessons, drawing inspiration from the video.
+                                        </p>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="message-row user-row svelte-1uvwjgr">
+                                <div class="avatar-container svelte-1uvwjgr">
+                                    <img class="avatar-image svelte-1uvwjgr" src="./static/images/user.png" alt="avatar-user">
+                                </div>
+                                <div data-testid="user" class="message user svelte-1uvwjgr latest" dir="ltr" style="border-style: solid;">
+                                    <span class="md svelte-9tftx4 chatbot"><p>Do you have any teaching videos?</p>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="message-row bot-row svelte-1uvwjgr">
+                                <div class="avatar-container svelte-1uvwjgr">
+                                    <img class="avatar-image svelte-1uvwjgr" src="./static/images/logo_n.png" alt="avatar-bot"></div>
+                                <div data-testid="bot" class="message bot svelte-1uvwjgr" dir="ltr" style="border-style: solid;">
+                                    <span class="md svelte-9tftx4 chatbot">
+                                        <p>Yes, I have a video that demonstrates how to paint a sunset scene. It might be a good starting point for you to learn and practice your skills. You can watch it here:</p>
+                                        <video src="./static/images/demo2/d2_v2.mp4" style="display: inline-block;" width="500" playsinline="" controls=""></video>
+                                    </span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <!--          End  Example-2-->
+
+                <br/>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+
+<section class="section">
+    <div class="container is-max-desktop">
+
+        <!--    <div class="columns is-centered has-text-centered">-->
+        <!--        <h2 class="title is-2">Demonstrations</h2>-->
+        <!--      <br>-->
+        <!--    </div>-->
+
+        <div class="columns is-centered">
+            <div class="column is-full-width">
+                <h2 class="title is-3">Related Links</h2>
+
+                <div class="content has-text-justified">
+                    <p>
+                        You may refer to related work that serves as foundations for our framework and code repository,
+                        such as <a href="https://github.com/X-PLUG/mPLUG-Owl">mPLUG-Owl</a>,
+                        and <a href="https://huggingface.co/cerspense/zeroscope_v2_576w">Zeroscope</a>.
+                        We also partially draw inspirations from <a href="https://next-gpt.github.io/">NExt-GPT</a>,
+                        <a href="https://github.com/DAMO-NLP-SG/Video-LLaMA">Video-LLaMA</a>,
+                        <a href="https://github.com/kohjingyu/gill">GILL</a>,
+                        and <a href="https://github.com/Vision-CAIR/MiniGPT-4">MiniGPT-4</a>.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<section class="section" id="BibTeX">
+    <div class="container is-max-desktop content">
+        <h2 class="title">BibTeX</h2>
+        <pre><code>@articles{wang2023gpt4video,
+  title={GPT4Video: A Unified Multimodal Large Language Model for lnstruction-Followed Understanding and Safety-Aware Generation},
+  author={Zhanyu Wang, Longyue Wang, Minghao Wu, Zhen Zhao, Chenyang Lyu, Huayang Li, Deng Cai, Luping Zhou, Shuming Shi, Zhaopeng Tu},
+  journal = {CoRR},
+  year={2023}
+}
+</code></pre>
+    </div>
+</section>
+
+
+<script type='text/javascript' id='clustrmaps' src='//cdn.clustrmaps.com/map_v2.js?cl=080808&w=300&t=tt&d=_lcpDt4Ev7cWdPII8576OU_BM0pO6cvqXh3oob2UKrQ&co=ffffff&cmo=3acc3a&cmn=ff5353&ct=808080'></script>
+
+
+<footer class="footer">
+    <div class="container">
+        <div class="columns is-centered">
+            <div class="column is-8">
+                <div class="content">
+                    <p style="text-align: center;">
+                        The webpage is built based on <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>
